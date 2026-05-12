@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora PLR 2025</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f3;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      padding: 2rem;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .header {
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: #e8f4e8;
+      color: #2d6a2d;
+      margin-top: 8px;
+    }
+
+    .field {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #444;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.15s;
+      color: #1a1a1a;
+      background: #fff;
+    }
+
+    input[type="text"]:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+    }
+
+    .formula-hint {
+      font-size: 12px;
+      color: #888;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+
+    button:hover { background: #4338ca; }
+    button:active { transform: scale(0.98); }
+
+    .results {
+      margin-top: 1.75rem;
+      display: none;
+    }
+
+    .divider {
+      height: 0.5px;
+      background: #eee;
+      margin: 1.5rem 0;
+    }
+
+    .results-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 0.5px solid #f0f0f0;
+    }
+
+    .result-row:last-child { border-bottom: none; }
+
+    .result-label {
+      font-size: 14px;
+      color: #555;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .result-label .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .result-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .result-value.green { color: #16a34a; }
+    .result-value.red { color: #dc2626; }
+    .result-value.blue { color: #4f46e5; }
+
+    .highlight-card {
+      background: #f0f0ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .highlight-card .hl-label {
+      font-size: 13px;
+      color: #4338ca;
+      font-weight: 500;
+    }
+
+    .highlight-card .hl-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #3730a3;
+    }
+
+    .aliquota-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 20px;
+      margin-left: 6px;
+    }
+
+    .aliquota-isento { background: #dcfce7; color: #166534; }
+    .aliquota-75 { background: #fef9c3; color: #854d0e; }
+    .aliquota-15 { background: #fff7ed; color: #9a3412; }
+    .aliquota-225 { background: #fee2e2; color: #991b1b; }
+    .aliquota-275 { background: #fce7f3; color: #9d174d; }
+
+    .tabela-section {
+      margin-top: 2rem;
+    }
+
+    .tabela-toggle {
+      background: none;
+      border: none;
+      color: #4f46e5;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0;
+      width: auto;
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tabela-toggle:hover { background: none; color: #3730a3; transform: none; }
+
+    .tabela-ir {
+      display: none;
+      margin-top: 1rem;
+    }
+
+    .tabela-ir table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .tabela-ir th {
+      text-align: left;
+      padding: 7px 10px;
+      background: #f5f5f3;
+      color: #555;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .tabela-ir td {
+      padding: 7px 10px;
+      border-bottom: 0.5px solid #f0f0f0;
+      color: #333;
+    }
+
+    .tabela-ir tr.ativa td {
+      background: #eff6ff;
+      font-weight: 600;
+      color: #1d4ed8;
+    }
+
+    .error {
+      font-size: 13px;
+      color: #dc2626;
+      margin-top: 6px;
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 1.5rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: #111; color: #f0f0f0; }
+      .card { background: #1c1c1e; border-color: rgba(255,255,255,0.1); }
+      .header h1 { color: #f0f0f0; }
+      .header p { color: #aaa; }
+      label { color: #ccc; }
+      input[type="text"] { background: #2c2c2e; border-color: #444; color: #f0f0f0; }
+      input[type="text"]:focus { border-color: #818cf8; }
+      .result-label { color: #bbb; }
+      .result-value { color: #f0f0f0; }
+      .result-row { border-bottom-color: #2a2a2a; }
+      .divider { background: #2a2a2a; }
+      .highlight-card { background: #1e1b4b; border-color: #3730a3; }
+      .highlight-card .hl-label { color: #a5b4fc; }
+      .highlight-card .hl-value { color: #c7d2fe; }
+      .tabela-ir th { background: #2c2c2e; color: #aaa; }
+      .tabela-ir td { color: #ccc; border-bottom-color: #2a2a2a; }
+      .tabela-ir tr.ativa td { background: #1e3a5f; color: #93c5fd; }
+      .formula-hint { color: #777; }
+      footer { color: #555; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h1>Calculadora PLR 2025</h1>
+      <p>Participação nos Lucros e Resultados com desconto de IR</p>
+      <span class="badge">Tabela vigente desde maio/2025 — Lei nº 15.191/2025</span>
+    </div>
+
+    <div class="field">
+      <label for="salario">Salário bruto (R$)</label>
+      <input type="text" id="salario" placeholder="Ex: 5.000,00" inputmode="decimal" autocomplete="off" />
+      <p class="formula-hint">PLR = Salário × 203,41% + R$ 3.340,18</p>
+      <p class="error" id="erro">Por favor, insira um salário válido.</p>
+    </div>
+
+    <button onclick="calcular()">Calcular PLR</button>
+
+    <div class="results" id="resultados">
+      <div class="divider"></div>
+      <p class="results-title">Resultado</p>
+
+      <div class="result-row">
+        <span class="result-label">
+          <span class="dot" style="background:#6366f1"></span>
+          PLR bruta
+        </span>
+        <span class="result-value blue" id="res-bruta">—</span>
+      </div>
+
+      <div class="result-row">
+        <span class="result-label">
+          <span class="dot" style="background:#f59e0b"></span>
+          Alíquota de IR
+        </span>
+        <span class="result-value" id="res-aliquota">—</span>
+      </div>
+
+      <div class="result-row">
+        <span class="result-label">
+          <span class="dot" style="background:#ef4444"></span>
+          Imposto de Renda retido
+        </span>
+        <span class="result-value red" id="res-ir">—</span>
+      </div>
+
+      <div class="highlight-card">
+        <span class="hl-label">PLR líquida a receber</span>
+        <span class="hl-value" id="res-liquida">—</span>
+      </div>
+    </div>
+
+    <div class="tabela-section">
+      <div class="divider"></div>
+      <button class="tabela-toggle" onclick="toggleTabela()">
+        <span id="tabela-icon">▶</span> Ver tabela de IR para PLR 2025
+      </button>
+      <div class="tabela-ir" id="tabelaIR">
+        <table>
+          <thead>
+            <tr>
+              <th>PLR anual</th>
+              <th>Alíquota</th>
+              <th>Dedução</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="faixa-0"><td>Até R$ 8.214,40</td><td>Isento</td><td>—</td></tr>
+            <tr id="faixa-1"><td>R$ 8.214,41 até R$ 9.922,28</td><td>7,5%</td><td>R$ 616,08</td></tr>
+            <tr id="faixa-2"><td>R$ 9.922,29 até R$ 13.167,00</td><td>15%</td><td>R$ 1.360,25</td></tr>
+            <tr id="faixa-3"><td>R$ 13.167,01 até R$ 16.380,38</td><td>22,5%</td><td>R$ 2.347,78</td></tr>
+            <tr id="faixa-4"><td>Acima de R$ 16.380,38</td><td>27,5%</td><td>R$ 3.166,80</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <footer>Tabela IR PLR — Lei nº 15.191/2025 · Receita Federal</footer>
+  </div>
+
+  <script>
+    function parseBRL(str) {
+      if (!str) return NaN;
+      return parseFloat(str.replace(/\./g, '').replace(',', '.'));
+    }
+
+    function formatBRL(n) {
+      return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function calcularIR(plr) {
+      if (plr <= 8214.40) return { ir: 0, faixa: 0, label: 'Isento', classe: 'aliquota-isento' };
+      if (plr <= 9922.28) return { ir: plr * 0.075 - 616.08, faixa: 1, label: '7,5%', classe: 'aliquota-75' };
+      if (plr <= 13167.00) return { ir: plr * 0.15 - 1360.25, faixa: 2, label: '15%', classe: 'aliquota-15' };
+      if (plr <= 16380.38) return { ir: plr * 0.225 - 2347.78, faixa: 3, label: '22,5%', classe: 'aliquota-225' };
+      return { ir: plr * 0.275 - 3166.80, faixa: 4, label: '27,5%', classe: 'aliquota-275' };
+    }
+
+    function calcular() {
+      const input = document.getElementById('salario').value.trim();
+      const erro = document.getElementById('erro');
+      const salario = parseBRL(input);
+
+      if (isNaN(salario) || salario <= 0) {
+        erro.style.display = 'block';
+        document.getElementById('resultados').style.display = 'none';
+        return;
+      }
+
+      erro.style.display = 'none';
+
+      const plrBruta = salario * 2.0341 + 3340.18;
+      const { ir, faixa, label, classe } = calcularIR(plrBruta);
+      const plrLiquida = plrBruta - ir;
+
+      document.getElementById('res-bruta').textContent = formatBRL(plrBruta);
+      document.getElementById('res-ir').textContent = ir > 0 ? '− ' + formatBRL(ir) : 'R$ 0,00';
+      document.getElementById('res-liquida').textContent = formatBRL(plrLiquida);
+
+      const aliquotaEl = document.getElementById('res-aliquota');
+      aliquotaEl.innerHTML = `<span class="aliquota-badge ${classe}">${label}</span>`;
+
+      document.getElementById('resultados').style.display = 'block';
+
+      document.querySelectorAll('.tabela-ir tr').forEach(tr => tr.classList.remove('ativa'));
+      const faixaEl = document.getElementById('faixa-' + faixa);
+      if (faixaEl) faixaEl.classList.add('ativa');
+
+      if (document.getElementById('tabelaIR').style.display !== 'block') {
+        document.getElementById('tabelaIR').style.display = 'block';
+        document.getElementById('tabela-icon').textContent = '▼';
+      }
+    }
+
+    function toggleTabela() {
+      const t = document.getElementById('tabelaIR');
+      const icon = document.getElementById('tabela-icon');
+      const aberta = t.style.display === 'block';
+      t.style.display = aberta ? 'none' : 'block';
+      icon.textContent = aberta ? '▶' : '▼';
+    }
+
+    document.getElementById('salario').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') calcular();
+    });
+  </script>
+</body>
+</html>
